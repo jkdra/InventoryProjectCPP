@@ -1,0 +1,15 @@
+# ninja log v6
+0	571	1746430860278734217	CMakeFiles/Inventory.dir/main.cpp.o	fd4ea6c9f45826a1
+3	520	1746430909088829842	CMakeFiles/Inventory.dir/Inventory.cpp.o	b18072f69b6ad163
+520	642	1746430909606432775	Inventory	da2fda0ed096f522
+4	685	1746431094978941826	CMakeFiles/Inventory.dir/main.cpp.o	fd4ea6c9f45826a1
+5	730	1746431094980087041	CMakeFiles/Inventory.dir/Inventory.cpp.o	b18072f69b6ad163
+730	773	1746431095705238699	Inventory	da2fda0ed096f522
+5	742	1746432259417438880	CMakeFiles/Inventory.dir/main.cpp.o	fd4ea6c9f45826a1
+6	777	1746432259418523386	CMakeFiles/Inventory.dir/Inventory.cpp.o	b18072f69b6ad163
+777	894	1746432260189622006	Inventory	da2fda0ed096f522
+4	528	1746432281938453738	CMakeFiles/Inventory.dir/main.cpp.o	fd4ea6c9f45826a1
+528	565	1746432282462221746	Inventory	da2fda0ed096f522
+5	808	1746432791230661930	CMakeFiles/Inventory.dir/Inventory.cpp.o	b18072f69b6ad163
+4	535	1746432825239394633	CMakeFiles/Inventory.dir/main.cpp.o	fd4ea6c9f45826a1
+535	638	1746432825770722714	Inventory	da2fda0ed096f522
