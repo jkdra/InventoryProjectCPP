@@ -16,13 +16,13 @@ using namespace std;
  * 
  * I chose to initialize each shelf compartment to nullptr rather than rely on default
  * initialization to explicitly show that all compartments start empty. This approach
- * makes the code's intent clearer and ensures consistent behavior regardless of 
+ * clarifies the code's intent and ensures consistent behavior regardless of
  * compiler optimizations or implementation details.
  */
 Inventory::Inventory() {
     // Initialize all compartments to nullptr (empty)
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 15; j++) shelves[i][j] = nullptr;
+    for (auto & shelve : shelves) {
+        for (auto & j : shelve) j = nullptr;
     }
 }
 
@@ -35,9 +35,7 @@ Inventory::Inventory() {
  * to be automatically released when they go out of scope. This prevents memory leaks
  * without requiring explicit cleanup code.
  */
-Inventory::~Inventory() {
-    // Smart pointers handle cleanup automatically
-}
+Inventory::~Inventory() = default;
 
 /**
  * Helper method to convert integer IDs to string representation
@@ -47,7 +45,7 @@ Inventory::~Inventory() {
  * more maintainable - if we ever need to change the ID format (e.g., add prefixes
  * or zero-padding), we only need to modify this one function.
  */
-string Inventory::getStringId(int id) const {
+string Inventory::getStringId(int id) {
     return to_string(id);
 }
 
@@ -55,7 +53,7 @@ string Inventory::getStringId(int id) const {
  * Operator overloading for non-const shelf access
  * 
  * This implementation of the [] operator enables intuitive, array-like access
- * to shelves and compartments using syntax like: inventory[2][3]. The bounds
+ * to shelves and compartments using syntax like: inventory[2][3]. The bound
  * checking ensures that invalid shelf indices are caught immediately with a
  * descriptive exception rather than causing undefined behavior or silent failures.
  */
@@ -98,7 +96,7 @@ bool Inventory::isCompartmentEmpty(const Position& pos) const {
  * entire map, especially as the number of checked-out items grows.
  */
 bool Inventory::isItemCheckedOut(const string& itemId) const {
-    return checkedOutItems.find(itemId) != checkedOutItems.end();
+    return checkedOutItems.contains(itemId);
 }
 
 /**
@@ -120,25 +118,12 @@ void Inventory::addItem(const Position& position, const Item& item) {
         throw out_of_range("Position is out of valid range");
     }
     
-    // Check if compartment is empty
+    // Check if the compartment is empty
     if (!isCompartmentEmpty(position)) {
         throw runtime_error("Compartment is not empty");
     }
-    
-    // Create a copy of the item based on its type
-    if (const Book* book = dynamic_cast<const Book*>(&item)) {
-        shelves[position.getRow()][position.getCol()] = make_unique<Book>(*book);
-    } 
-    else if (const Magazine* magazine = dynamic_cast<const Magazine*>(&item)) {
-        shelves[position.getRow()][position.getCol()] = make_unique<Magazine>(*magazine);
-    } 
-    else if (const Movie* movie = dynamic_cast<const Movie*>(&item)) {
-        shelves[position.getRow()][position.getCol()] = make_unique<Movie>(*movie);
-    } 
-    else {
-        // Generic item copy
-        shelves[position.getRow()][position.getCol()] = make_unique<Item>(item);
-    }
+
+    shelves[position.getRow()][position.getCol()] = make_unique<Item>(item);
 }
 
 /**
@@ -166,8 +151,8 @@ Item* Inventory::checkoutItem(const string& itemId, const string& checkOutBy) {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 15; j++) {
             if (shelves[i][j] && getStringId(shelves[i][j]->getID()) == itemId) {
-                // Generate due date (30 days from now)
-                auto now = time(nullptr);
+                // Generate the due date (30 days from now)
+                const auto now = time(nullptr);
                 auto tm = *localtime(&now);
                 tm.tm_mday += 30; // Add 30 days
                 mktime(&tm);
@@ -176,18 +161,18 @@ Item* Inventory::checkoutItem(const string& itemId, const string& checkOutBy) {
                 dueDate << put_time(&tm, "%Y-%m-%d");
                 
                 // Create checkout record
-                Position pos(i, j);
+                const Position pos(i, j);
                 
                 // Create the unique_ptr and store a raw pointer for return
                 Item* itemPtr = shelves[i][j].get();
                 
                 // Insert into the map using emplace
-                auto result = checkedOutItems.emplace(
+                checkedOutItems.emplace(
                     itemId, 
                     CheckoutInfo(checkOutBy, dueDate.str(), pos, move(shelves[i][j]))
                 );
                 
-                // Return pointer to the checked out item
+                // Return pointer to the checked-out item
                 return itemPtr;
             }
         }
@@ -250,7 +235,7 @@ void Inventory::swapItems(const Position& pos1, const Position& pos2) {
     if (!pos1.isValid() || !pos2.isValid()) {
         throw out_of_range("Position is out of valid range");
     }
-    
+
     // Check if both compartments have items
     if (isCompartmentEmpty(pos1) || isCompartmentEmpty(pos2)) {
         throw runtime_error("Cannot swap: one or both compartments are empty");
@@ -291,6 +276,7 @@ ostream& operator<<(ostream& os, const Inventory& inventory) {
     }
     
     if (!foundItems) os << "No items in storage." << endl;
+    return os;
 }
 
 /**

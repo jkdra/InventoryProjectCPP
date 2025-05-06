@@ -62,7 +62,7 @@ private:
     unique_ptr<Item> shelves[3][15];
     
     /**
-     * Map to track checked out items, using item ID as the key.
+     * Map to track checked-out items, using item ID as the key.
      * I chose a map data structure for efficient lookup by item ID, which is
      * critical for the checkout/checkin operations.
      */
@@ -76,7 +76,7 @@ private:
      * This utility function standardizes ID conversion throughout the code,
      * allowing us to easily change the ID format if needed in the future.
      */
-    string getStringId(int id) const;
+    static string getStringId(int id) ;
 
 public:
     /**
